@@ -476,13 +476,13 @@ Branch: main
 SSH Remote: git@github.com:Vennilavan12/Brain-Tasks-App.git
 
 === COST ESTIMATE ===
-EKS Cluster: `$10/month
-EC2 Nodes (3): ~`$30/month
-Load Balancer: ~`$16/month
-Data Transfer: ~`$5/month
-CloudWatch: ~`$5/month
-Other: ~`$4/month
-TOTAL: ~`$70/month
+EKS Cluster: ~$10/month
+EC2 Nodes (3): ~$30/month
+Load Balancer: ~$16/month
+Network Transfer: ~$5/month
+CloudWatch: ~$5/month
+Other: ~$4/month
+TOTAL: ~$70/month
 "@
 
 $DeploymentInfo | Out-File -FilePath $DeployInfoFile -Encoding UTF8 -Force

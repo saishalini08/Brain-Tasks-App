@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: brain-tasks-app
@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
       - name: brain-tasks-app
-        image: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/brain-tasks-app:latest
+        image: 524140443370.dkr.ecr.ap-south-1.amazonaws.com/brain-tasks-app:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -65,3 +65,4 @@ spec:
                   values:
                   - brain-tasks-app
               topologyKey: kubernetes.io/hostname
+
