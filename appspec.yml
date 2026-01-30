@@ -1,23 +1,45 @@
 version: 0.0
+
+# This appspec.yml is configured for EKS (Kubernetes) deployment
+# It uses CodeDeploy to manage Kubernetes deployments
+
 Resources:
   - TargetService:
-      Type: AWS::ECS::Service
+      Type: AWS::EKS::Deployment
       Properties:
-        TaskDefinition: "arn:aws:ecs:us-east-1:ACCOUNT_ID:task-definition/brain-tasks-app:1"
-        LoadBalancerInfo:
-          ContainerName: "brain-tasks-app"
-          ContainerPort: 80
-        PlatformVersion: "LATEST"
-        NetworkConfiguration:
-          AwsvpcConfiguration:
-            Subnets:
-              - "subnet-xxxxx"
-            SecurityGroups:
-              - "sg-xxxxx"
-            AssignPublicIp: "ENABLED"
-
+        Name: brain-tasks-app
+        Namespace: default
+        Image: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/brain-tasks-app:latest
+        Replicas: 3
+        Port: 80
+        
 Hooks:
-  - BeforeInstall: "PreInstallScript"
-  - AfterInstall: "PostInstallScript"
-  - BeforeAllowTraffic: "BeforeTrafficScript"
-  - AfterAllowTraffic: "AfterTrafficScript"
+  # BeforeBlockTraffic: Hook to perform pre-deployment validation
+  - BeforeBlockTraffic: 
+      - Location: k8s-scripts/before-block-traffic.sh
+        Timeout: 300
+        RunAs: root
+  
+  # AfterBlockTraffic: Hook to perform health checks before deployment
+  - AfterBlockTraffic:
+      - Location: k8s-scripts/after-block-traffic.sh
+        Timeout: 300
+        RunAs: root
+  
+  # BeforeAllowTraffic: Hook to validate deployment
+  - BeforeAllowTraffic:
+      - Location: k8s-scripts/before-allow-traffic.sh
+        Timeout: 300
+        RunAs: root
+  
+  # AfterAllowTraffic: Hook to complete deployment
+  - AfterAllowTraffic:
+      - Location: k8s-scripts/after-allow-traffic.sh
+        Timeout: 300
+        RunAs: root
+
+# Note: For EKS deployments, CodeDeploy triggers kubectl commands
+# Actual deployment is managed through:
+# 1. CodeBuild pushes image to ECR
+# 2. CodeDeploy updates k8s-manifests with new image
+# 3. kubectl apply is executed to update EKS cluster
